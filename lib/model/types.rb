@@ -224,8 +224,11 @@ module SimpleXml
       when 'Check if Present'
         AnyValue.new
       else
-        quantity = attribute.at_xpath('@comparisonValue').value
+        val = attribute.at_xpath('@comparisonValue') || attribute.at_xpath('@attrDate')
+        quantity = val.value
+        quantity = Date.strptime(quantity,'%Y%m%d').strftime('%m/%d/%Y') if attribute.at_xpath('@attrDate')
         unit = attribute.at_xpath('@unit').try(:value)
+        unit = 'STATIC_DATE' if attribute.at_xpath('@attrDate')
         Utilities.build_value(mode, quantity, unit)
       end
     end
